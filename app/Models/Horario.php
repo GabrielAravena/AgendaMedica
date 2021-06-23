@@ -5,7 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Gabriel extends Model
+class Horario extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'doctor_id',
+        'dia',
+        'desde',
+        'hasta',
+    ];
 }

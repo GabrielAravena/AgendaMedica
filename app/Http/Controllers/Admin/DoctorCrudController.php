@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\DoctorRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use App\Models\Hora;
+use App\Models\Horario;
 
 /**
  * Class DoctorCrudController
@@ -14,7 +16,9 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 class DoctorCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation {
+        store as traitStore;
+    }
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
@@ -59,7 +63,235 @@ class DoctorCrudController extends CrudController
     {
         CRUD::setValidation(DoctorRequest::class);
 
-        CRUD::setFromDb(); // fields
+        //CRUD::setFromDb(); // fields
+
+        $horas = Hora::all()->pluck("hora");
+        $horas_array = [];
+        foreach ($horas as $hora) {
+            $horas_array += [$hora => $hora];
+        }
+        //dd($horas_array);
+        CRUD::addField([
+            'name' => 'nombre',
+            'type' => 'text',
+            'tab' => 'Personal'
+        ]);
+        CRUD::addField([
+            'name' => 'especialidad',
+            'type' => 'text',
+            'tab' => 'Personal'
+        ]);
+
+        CRUD::addField([
+            'name' => '1',
+            'type' => 'checkbox',
+            'label' => 'Lunes',
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-6 mt-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'desde1',
+            'label'   => 'Desde',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'hasta1',
+            'label'   => 'Hasta',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+
+        CRUD::addField([
+            'name' => '2',
+            'type' => 'checkbox',
+            'label' => 'Martes',
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-6 mt-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'desde2',
+            'label'   => 'Desde',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'hasta2',
+            'label'   => 'Hasta',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+
+        CRUD::addField([
+            'name' => '3',
+            'type' => 'checkbox',
+            'label' => 'Miércoles',
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-6 mt-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'desde3',
+            'label'   => 'Desde',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'hasta3',
+            'label'   => 'Hasta',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+
+        CRUD::addField([
+            'name' => '4',
+            'type' => 'checkbox',
+            'label' => 'Jueves',
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-6 mt-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'desde4',
+            'label'   => 'Desde',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'hasta4',
+            'label'   => 'Hasta',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+
+        CRUD::addField([
+            'name' => '5',
+            'type' => 'checkbox',
+            'label' => 'Viernes',
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-6 mt-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'desde5',
+            'label'   => 'Desde',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'hasta5',
+            'label'   => 'Hasta',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+
+        CRUD::addField([
+            'name' => '6',
+            'type' => 'checkbox',
+            'label' => 'Sábado',
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-6 mt-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'desde6',
+            'label'   => 'Desde',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'hasta6',
+            'label'   => 'Hasta',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+
+        CRUD::addField([
+            'name' => '7',
+            'type' => 'checkbox',
+            'label' => 'Domingo',
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-6 mt-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'desde7',
+            'label'   => 'Desde',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+        CRUD::addField([
+            'name'    => 'hasta7',
+            'label'   => 'Hasta',
+            'type'    => 'select_from_array',
+            'options' => $horas_array,
+            'tab' => 'Horarios',
+            'wrapper' => [
+                'class' => 'form-group col-md-3',
+            ],
+        ]);
+
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:
@@ -77,5 +309,24 @@ class DoctorCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
+    }
+
+    public function store(DoctorRequest $request)
+    {
+        $response = $this->traitStore();
+        $id = $this->crud->entry->id;
+
+        for ($i = 1; $i < 8; $i++) {
+            if ($request->$i) {
+                Horario::create([
+                    'doctor_id' => $id,
+                    'dia' => $i,
+                    'desde' => Request("desde".$i),
+                    'hasta' => Request("hasta".$i),
+                ]);
+            }
+        }
+
+        return $response;
     }
 }

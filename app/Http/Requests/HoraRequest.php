@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class DoctorRequest extends FormRequest
+class HoraRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +15,6 @@ class DoctorRequest extends FormRequest
     public function authorize()
     {
         // only allow updates if the user is logged in
-        //dd($this->all());
         return backpack_auth()->check();
     }
 
