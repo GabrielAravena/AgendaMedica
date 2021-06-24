@@ -7,6 +7,7 @@ use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use App\Models\Hora;
 use App\Models\Horario;
+use App\Models\Especialidad;
 
 /**
  * Class DoctorCrudController
@@ -70,17 +71,22 @@ class DoctorCrudController extends CrudController
         foreach ($horas as $hora) {
             $horas_array += [$hora => $hora];
         }
-        //dd($horas_array);
+        
         CRUD::addField([
             'name' => 'nombre',
             'type' => 'text',
             'tab' => 'Personal'
         ]);
         CRUD::addField([
-            'name' => 'especialidad',
-            'type' => 'text',
-            'tab' => 'Personal'
-        ]);
+            'label'     => "Especialidad",
+            'type'      => 'select2',
+            'name'      => 'especialidad_id',
+            'tab'       => 'Personal', 
+            'entity'    => 'especialidad', 
+            'model'     => "App\Models\Especialidad", 
+            'attribute' => 'nombre', 
+            'default'   => 1,
+          ]);
 
         CRUD::addField([
             'name' => '1',

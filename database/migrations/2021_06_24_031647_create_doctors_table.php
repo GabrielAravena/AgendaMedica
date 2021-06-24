@@ -16,7 +16,7 @@ class CreateDoctorsTable extends Migration
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
             $table->string("nombre");
-            $table->string("especialidad");
+            $table->foreignId("especialidad_id")->constrained("especialidades");
             $table->timestamps();
         });
     }

@@ -12,3 +12,7 @@
     </ul>
 </li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('hora') }}'><i class='nav-icon la la-question'></i> Horas</a></li>
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('agenda') }}'><i class='nav-icon la la-question'></i> Agendas</a></li>
+<li class='nav-item'><a class='nav-link' href='{{ route('calendar.index') }}'><i class='nav-icon la la-question'></i> Calendario</a></li>
+
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('especialidad') }}'><i class='nav-icon la la-question'></i> Especialidades</a></li>

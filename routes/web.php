@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CalendarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/admin/calendar/', [CalendarController::class, 'index'])->name('calendar.index');
+Route::get('/admin/services/getDoctors/especialidadId/{id}', [CalendarController::class, 'getDoctors']);
+Route::get('/admin/services/getHorasDisponibles/doctorId/{id}', [CalendarController::class, 'getHorasDisponibles']);

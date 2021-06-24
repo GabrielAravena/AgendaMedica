@@ -4,9 +4,8 @@ namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Especialidad;
 
-class Doctor extends Model
+class Especialidad extends Model
 {
     use CrudTrait;
 
@@ -16,7 +15,7 @@ class Doctor extends Model
     |--------------------------------------------------------------------------
     */
 
-    protected $table = 'doctors';
+    protected $table = 'especialidades';
     // protected $primaryKey = 'id';
     // public $timestamps = false;
     protected $guarded = ['id'];
@@ -35,9 +34,6 @@ class Doctor extends Model
     | RELATIONS
     |--------------------------------------------------------------------------
     */
-    public function especialidad() {
-        return $this->belongsTo(Especialidad::class, "especialidad_id");
-    }
 
     /*
     |--------------------------------------------------------------------------
