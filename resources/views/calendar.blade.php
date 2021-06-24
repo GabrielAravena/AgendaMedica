@@ -33,48 +33,28 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalAddEventLabel">Nuevo agendamiento</h5>
+                <h5 class="modal-title" id="modalAddEventLabel">Agendamiento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div id="modalAdd-body" class="modal-body">
                 <form mothod="POST" id="form2" action="#">
                     @csrf
                     <div class="mb-3">
-                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Nombre" required>
+                        <label for="time">Fecha:</label>
+                        <input type="datepicker" class="form-control" id="date" name="date" disabled>
                     </div>
                     <div class="mb-3">
-                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Apellido" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Correo" required>
-                    </div>
-                    <div class="mb-3">
-                        <select id="service_hash" class="form-select" aria-label="Default select example">
-                            <option value="" selected>Seleccione un servicio</option>
-                            @foreach($agendas as $agenda)
-                            <option value="{{ $agenda->id }}">{{ $agenda->hora }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <input type="datepicker" class="form-control" id="date" name="date">
-                    </div>
-                    <div class="mb-3">
-                        <label for="time">Hora de inicio:</label>
-                        <input type="time" class="form-control" id="start-time" name="start_time">
-                    </div>
-                    <div class="mb-3">
-                        <label for="time">Hora de término:</label>
-                        <input type="time" class="form-control" id="end-time" name="end_time">
-                    </div>
-                    <div class="mb-3">
-                        <textarea class="form-control" id="comment" name="comment" placeholder="Comentario"></textarea>
+                        <label for="time">Hora:</label>
+                        <input type="time" class="form-control" id="time" name="time" disabled>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button id="save" type="button" class="btn btn-primary">Guardar</button>
+                <label class="col-md-12">¿Desea confirmar su hora?</label>
+                <div class="col-md-12 text-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="save" type="button" class="btn btn-primary">Confirmar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -124,30 +104,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="filterModalLabel">Filtrar por servicio</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <select id="service-filter" class="form-select" aria-label="Default select example">
-                        <option value="" selected>Sin filtro</option>
-                        @foreach($agendas as $agenda)
-                        <option value="{{ $agenda->id }}">{{ $agenda->hora }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="service-filter-button" type="button" class="btn btn-primary">Filtrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script>
 
@@ -184,27 +140,47 @@
             var doctorId = selectDoctor.val();
             calendar();
         });
+
+        $('#save').click(function(){
+            var data = {
+                doctor_id: selectDoctor.val(),
+                fecha: $('#date').val(),
+                hora: $('#time').val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "{{ route('calendar.store') }}",
+                data: data,
+                success: function (){
+                    $('#modalAddEvent').modal('hide');
+                    calendar();
+                },
+                error: function (info){
+                    alert("Ha ocurrido un error, inténtalo nuevamente.");
+                }
+            });
+        });
     });
 
     function calendar(hash){
-        var today = new Date();
-        console.log(today);
+        
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
             locale: 'cl',
-            slotMinTime: '09:00:00',
-            slotMaxTime: '18:00:00',
+            slotMinTime: '08:00:00',
+            slotMaxTime: '21:00:00',
             height: 'auto', 
             timeZone: 'UTC-3',
             firstDay: 1,
+            allDaySlot: false,
             displayEventTime: true,
             selectable: false,
             initialView: 'timeGridWeek',
             headerToolbar: {
                 start: 'title',
-                center: 'filterService list',
-                end: 'today prev,next dayGridMonth timeGridWeek timeGridDay',
+                end: 'today prev,next timeGridWeek timeGridDay',
             },
             buttonText: {
                 today: 'hoy',
@@ -214,13 +190,6 @@
                 list: 'lista',
             },
             events: [],
-
-            dayRender: function(date, cell){
-                console.log(date, cell);
-                if (date > today){
-                    $(cell).addClass('disabled');
-                }
-            },
          
             eventClick: function(info){
                 $('#modalShowEvent').appendTo("body");
@@ -254,18 +223,8 @@
 
                 $('#date').val(date);
 
-                $('#start-time').val(startTime);
+                $('#time').val(startTime);
             },
-            customButtons: {
-                filterService: {
-                    text: 'Filtrar por servicio',
-                    click: function() {
-                        $('#filterModal').appendTo("body");
-                        var modal = new bootstrap.Modal(document.getElementById('filterModal'));
-                        modal.toggle();
-                    }
-                }
-            }
         });
         calendar.render();
     }

@@ -19,7 +19,7 @@ class CalendarController extends Controller
         $user = backpack_user();
         $especialidades = Especialidad::all();
 
-        if($user->hasRole('Admin')){
+        if($user->hasRole('Admin') || $user->hasRole("Adminisitrador")){
             $agendas = Agenda::all();
         }else{
             $agendas = Agenda::where('id', $user->id)->get();
@@ -40,6 +40,56 @@ class CalendarController extends Controller
         $response = ['data' => $horarios];
      
         return response()->json($response);
+    }
+
+    public function getEvents(){
+
+        $user = backpack_user();
+
+        if($user->hasRole('Admin') || $user->hasRole("Adminisitrador")){
+            $agendas = Agenda::all();
+        }else{
+            $agendas = Agenda::where('id', $user->id)->get();
+        }
+
+        $events = [];
+        foreach($agendas as $agenda){
+            $horaTermino = strtotime($agenda->hora)->modify('+30 minute');
+            $event = array(
+                'title' => "Consulta médica",
+                'start' => $agenda->fecha. " " .$agenda->hora,
+                'end' => date("H:m:s", strtotime($agenda->hora)),
+                'doctor' => $agenda->doctor->nombre,
+                'especialidad' => $agenda->doctor->especialidad->nombre,
+            );
+            array_push($events, $event);
+        }
+
+        $response = ['data' => $events];
+        dd($response);
+        return response()->json($response);
+    }
+
+    public function store(Request $request){
+        $rules =[
+            'fecha' => 'required|date',
+            'hora' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            $errors = json_encode($validator->errors(), JSON_UNESCAPED_SLASHES);
+            return response($errors, 400);
+        }
+
+        $agenda = Agenda::create([
+            'user_id' => backpack_user()->id,
+            'doctor_id' => $request->doctor_id,
+            'fecha' => date('Y-m-d', strtotime($request->fecha)),
+            'hora' => $request->hora,
+            'duracion' => Agenda::DURACION,
+        ]);
     }
 
     /* public function store(Request $request){

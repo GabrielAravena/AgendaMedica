@@ -21,3 +21,7 @@ Route::get('/', function () {
 Route::get('/admin/calendar/', [CalendarController::class, 'index'])->name('calendar.index');
 Route::get('/admin/services/getDoctors/especialidadId/{id}', [CalendarController::class, 'getDoctors']);
 Route::get('/admin/services/getHorasDisponibles/doctorId/{id}', [CalendarController::class, 'getHorasDisponibles']);
+Route::post('/admin/calendar/store', [CalendarController::class, 'store'])->name('calendar.store');
+Route::get('/admin/services/getEvents', [CalendarController::class, 'getEvents']);
+
+

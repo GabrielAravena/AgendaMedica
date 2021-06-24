@@ -4,10 +4,15 @@ namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Doctor;
+
 
 class Agenda extends Model
 {
     use CrudTrait;
+
+    const DURACION = 30;
 
     /*
     |--------------------------------------------------------------------------
@@ -34,6 +39,13 @@ class Agenda extends Model
     | RELATIONS
     |--------------------------------------------------------------------------
     */
+    public function doctor(){
+        return $this->belongsTo(Doctor::class, "doctor_id");
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, "user_id");
+    }
 
     /*
     |--------------------------------------------------------------------------
