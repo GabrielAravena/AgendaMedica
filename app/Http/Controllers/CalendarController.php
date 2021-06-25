@@ -16,16 +16,14 @@ class CalendarController extends Controller
 {
     public function index()
     {
-        $user = backpack_user();
-        $especialidades = Especialidad::all();
-
-        if($user->hasRole('Admin') || $user->hasRole("Adminisitrador")){
-            $agendas = Agenda::all();
+        if($user = backpack_user()){
+            $especialidades = Especialidad::all();
+            $doctores = Doctor::where('especialidad_id', 1)->get();
+            
+            return view('calendar', compact('especialidades', 'doctores'));
         }else{
-            $agendas = Agenda::where('id', $user->id)->get();
+            return redirect(backpack_url('login'));
         }
-       
-        return view('calendar', compact('agendas', 'especialidades'));
     }
 
     public function getDoctors($id){
@@ -49,25 +47,48 @@ class CalendarController extends Controller
         if($user->hasRole('Admin') || $user->hasRole("Adminisitrador")){
             $agendas = Agenda::all();
         }else{
-            $agendas = Agenda::where('id', $user->id)->get();
+            $agendas = Agenda::where('user_id', $user->id)->where('fecha', '>=', date("y-m-d"))->get();
         }
 
         $events = [];
         foreach($agendas as $agenda){
-            $horaTermino = strtotime($agenda->hora)->modify('+30 minute');
+            $horaTermino = date('H:i:s', strtotime('+30 minutes', strtotime($agenda->hora)));
             $event = array(
-                'title' => "Consulta médica",
+                'title' => $agenda->doctor->especialidad->nombre,
                 'start' => $agenda->fecha. " " .$agenda->hora,
-                'end' => date("H:m:s", strtotime($agenda->hora)),
+                'end' => $agenda->fecha. " " .$horaTermino,
                 'doctor' => $agenda->doctor->nombre,
                 'especialidad' => $agenda->doctor->especialidad->nombre,
+                'fecha' => $agenda->fecha,
+                'hora' => $agenda->hora,
             );
             array_push($events, $event);
         }
+        return response()->json($events);
+    }
 
-        $response = ['data' => $events];
-        dd($response);
-        return response()->json($response);
+    public function getHorario($doctorId = 0){
+
+        $horarios = Horario::where('doctor_id', $doctorId)->get();
+
+        $resources = [];
+        $cont = 1;
+        foreach($horarios as $horario){
+            $businessHours[] = [
+                'id' => ''.$cont,
+                'title' => 'Resource '.$cont,
+                'businessHours' => [
+                    'startTime' => $horario->desde,
+                    'endTime' => $horario->hasta,
+                    'daysOfWeek' => [
+                        $horario->dia,
+                    ]
+                ]
+            ]; 
+            $resources += $businessHours;
+        }
+        return response()->json($resources);
+        //dd(json($resources));
     }
 
     public function store(Request $request){

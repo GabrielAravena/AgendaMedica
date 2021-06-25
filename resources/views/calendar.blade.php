@@ -16,6 +16,9 @@
                 <div class="mb-3">
                     <label for="selectDoctor" class="form-label">Seleccionar profesional</label>
                     <select id="selectDoctor" class="form-select">
+                        @foreach($doctores as $doctor)
+                            <option value="{{ $doctor->id }}">{{ $doctor->nombre }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Confirmar</button>
@@ -64,37 +67,25 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 id="modalShow-title" class="modal-title" id="modalShowEventLabel"></h5>
+                <h5 id="modalShow-title" class="modal-title" id="modalShowEventLabel">Información de agendamiento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label for="recipient-name" class="col-form-label">Nombre:</label>
-                    <input type="text" class="form-control" id="firstName-label" readonly>
+                    <label class="col-form-label">Doctor:</label>
+                    <input type="text" class="form-control" id="doctor-show" disabled>
                 </div>
                 <div class="mb-3">
-                    <label for="recipient-name" class="col-form-label">Apellido:</label>
-                    <input type="text" class="form-control" id="lastName-label" readonly>
+                    <label class="col-form-label">Especialidad:</label>
+                    <input type="text" class="form-control" id="especialidad-show" disabled>
                 </div>
                 <div class="mb-3">
-                    <label for="recipient-name" class="col-form-label">Email:</label>
-                    <input type="text" class="form-control" id="email-label" readonly>
+                    <label class="col-form-label">Fecha:</label>
+                    <input type="text" class="form-control" id="fecha-show" disabled>
                 </div>
                 <div class="mb-3">
-                    <label for="recipient-name" class="col-form-label">Fecha:</label>
-                    <input type="text" class="form-control" id="date-label" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="message-text" class="col-form-label">Desde:</label>
-                    <input type="text" class="form-control" id="start-label" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="message-text" class="col-form-label">Hasta:</label>
-                    <input type="text" class="form-control" id="end-label" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="message-text" class="col-form-label">Comentario:</label>
-                    <textarea class="form-control" id="comment-label" readonly></textarea>
+                    <label class="col-form-label">Hora:</label>
+                    <input type="text" class="form-control" id="hora-show" disabled>
                 </div>
             </div>
             <div class="modal-footer">
@@ -137,8 +128,13 @@
 
         $("#form").on('submit', function(e){
             e.preventDefault();
-            var doctorId = selectDoctor.val();
-            calendar();
+
+            if(selectDoctor.val() != null && selectEspecialidad.val() != null){
+                var doctorId = selectDoctor.val();
+                calendar(doctorId);
+            }else{
+                alert("Debe seleccionar una especialidad y un doctor.");
+            }
         });
 
         $('#save').click(function(){
@@ -163,7 +159,7 @@
         });
     });
 
-    function calendar(hash){
+    function calendar(doctorId){
         
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -180,7 +176,7 @@
             initialView: 'timeGridWeek',
             headerToolbar: {
                 start: 'title',
-                end: 'today prev,next timeGridWeek timeGridDay',
+                end: 'today next timeGridWeek timeGridDay',
             },
             buttonText: {
                 today: 'hoy',
@@ -189,23 +185,19 @@
                 day: 'día',
                 list: 'lista',
             },
-            events: [],
+            events: '{{ url("/admin/services/getEvents") }}',
+
+            /* '{{ url("/admin/services/getHorario/doctor") }}/'+ doctorId, */
          
             eventClick: function(info){
                 $('#modalShowEvent').appendTo("body");
 
-                var date = moment(info.event.extendedProps.start_at,'YYYY-MM-DDTHH:mm:ss').format('DD-MM-YYYY');
-                var start = moment(info.event.extendedProps.start_at,'YYYY-MM-DDTHH:mm:ss').format('HH:mm');
-                var end = moment(info.event.extendedProps.ends_at,'YYYY-MM-DDTHH:mm:ss').format('HH:mm');
+                var fecha = moment(info.event.extendedProps.fecha,'YYYY-MM-DD').format('DD-MM-YYYY');
 
-                $('#modalShow-title').text(info.event.title);
-                $('#firstName-label').val(info.event.extendedProps.customerFirstName);
-                $('#lastName-label').val(info.event.extendedProps.customerLastName);
-                $('#email-label').val(info.event.extendedProps.customerEmail);
-                $('#date-label').val(date);
-                $('#start-label').val(start);
-                $('#end-label').val(end);
-                $('#comment-label').text(info.event.extendedProps.comment);
+                $('#doctor-show').val(info.event.extendedProps.doctor);
+                $('#especialidad-show').val(info.event.extendedProps.especialidad);
+                $('#fecha-show').val(fecha);
+                $('#hora-show').val(info.event.extendedProps.hora);
 
                 var modal = new bootstrap.Modal(document.getElementById('modalShowEvent'));
                 modal.toggle();
@@ -222,7 +214,6 @@
                 var startTime = moment(info.dateStr,'YYYY-MM-DDTHH:mm:ss').format('HH:mm');
 
                 $('#date').val(date);
-
                 $('#time').val(startTime);
             },
         });
