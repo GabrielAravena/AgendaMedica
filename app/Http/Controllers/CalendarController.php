@@ -67,28 +67,19 @@ class CalendarController extends Controller
         return response()->json($events);
     }
 
-    public function getHorario($doctorId = 0){
+    public function getHorario($doctorId){
 
         $horarios = Horario::where('doctor_id', $doctorId)->get();
 
-        $resources = [];
-        $cont = 1;
+        $businessHours = [];
         foreach($horarios as $horario){
             $businessHours[] = [
-                'id' => ''.$cont,
-                'title' => 'Resource '.$cont,
-                'businessHours' => [
-                    'startTime' => $horario->desde,
-                    'endTime' => $horario->hasta,
-                    'daysOfWeek' => [
-                        $horario->dia,
-                    ]
-                ]
+                'daysOfWeek' => [$horario->dia],
+                'startTime' => $horario->desde, 
+                'endTime' => $horario->hasta,
             ]; 
-            $resources += $businessHours;
         }
-        return response()->json($resources);
-        //dd(json($resources));
+        return response()->json($businessHours);
     }
 
     public function store(Request $request){

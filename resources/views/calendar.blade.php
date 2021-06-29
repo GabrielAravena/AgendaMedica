@@ -21,7 +21,7 @@
                         @endforeach
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Confirmar</button>
+                <button type="button" id="confirmarDoctor" class="btn btn-primary">Confirmar</button>
             </form>
             <input type="hidden" id="filter-input" value="">
         </div>
@@ -126,12 +126,30 @@
             });
         });
 
-        $("#form").on('submit', function(e){
-            e.preventDefault();
+        $("#confirmarDoctor").on('click', function(e){
 
             if(selectDoctor.val() != null && selectEspecialidad.val() != null){
                 var doctorId = selectDoctor.val();
-                calendar(doctorId);
+
+                $.ajax({
+                    type: "GET",
+                    url: '{{ url("/admin/services/getEvents") }}',
+                    success: function (events){
+                        $.ajax({
+                            type: "GET",
+                            url: '{{ url("/admin/services/getHorario/doctor") }}/'+ doctorId,
+                            success: function (horario){
+                                calendar(doctorId, events, horario);
+                            },
+                            error: function (){
+                                alert("Ha ocurrido un error, inténtalo nuevamente.");
+                            }
+                        });
+                    },
+                    error: function (){
+                        alert("Ha ocurrido un error, inténtalo nuevamente.");
+                    }
+                });
             }else{
                 alert("Debe seleccionar una especialidad y un doctor.");
             }
@@ -150,19 +168,66 @@
                 data: data,
                 success: function (){
                     $('#modalAddEvent').modal('hide');
-                    calendar();
+                    window.location.reload();
                 },
-                error: function (info){
+                error: function (){
                     alert("Ha ocurrido un error, inténtalo nuevamente.");
                 }
             });
         });
     });
 
-    function calendar(doctorId){
+    /* function getEvents(){
+        var events = $.ajax({
+            type: "GET",
+            url: '{{ url("/admin/services/getEvents") }}',
+            success: function (response){
+                return response;
+            },
+            error: function (){
+                alert("Ha ocurrido un error, inténtalo nuevamente.");
+                var response = [];
+                return response;
+            }
+        });
+        if(events.lenght){
+            return events;
+        }else {
+            var events = [];
+            return events;
+        }
+        
+    }
+
+    function getWorkHours(doctorId){
+
+        return '{{ url("/admin/services/getHorario/doctor") }}/'+ doctorId;
+        var workHours = $.ajax({
+            type: "GET",
+            url: '{{ url("/admin/services/getHorario/doctor") }}/'+ doctorId,
+            success: function (response){
+                return response;
+            },
+            error: function (){
+                alert("Ha ocurrido un error, inténtalo nuevamente.");
+                var response = [];
+                return response;
+            }
+        });
+        if(workHours.lenght) {
+            return workHours;
+        }else {
+            var workHours = [];
+            return workHours;
+        }
+    } */
+
+    function calendar(doctorId = 0, events, workHours){
         
         var calendarEl = document.getElementById('calendar');
+
         var calendar = new FullCalendar.Calendar(calendarEl, {
+            themeSystem: 'bootstrap',
             schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
             locale: 'cl',
             slotMinTime: '08:00:00',
@@ -178,6 +243,8 @@
                 start: 'title',
                 end: 'today next timeGridWeek timeGridDay',
             },
+            businessHours: workHours,
+
             buttonText: {
                 today: 'hoy',
                 month:'mes',
@@ -185,13 +252,12 @@
                 day: 'día',
                 list: 'lista',
             },
-            events: '{{ url("/admin/services/getEvents") }}',
 
-            /* '{{ url("/admin/services/getHorario/doctor") }}/'+ doctorId, */
-         
+            events: events,
+
             eventClick: function(info){
                 $('#modalShowEvent').appendTo("body");
-
+                
                 var fecha = moment(info.event.extendedProps.fecha,'YYYY-MM-DD').format('DD-MM-YYYY');
 
                 $('#doctor-show').val(info.event.extendedProps.doctor);
@@ -204,7 +270,6 @@
             },
 
             dateClick: function(info){
-
                 $('#modalAddEvent').appendTo("body");
                
                 var modal = new bootstrap.Modal(document.getElementById('modalAddEvent'));
@@ -224,9 +289,13 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.css' rel='stylesheet' />
+    <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.css' rel='stylesheet'>
+    
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.6.0/main.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+
 
 @endsection
