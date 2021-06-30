@@ -177,51 +177,6 @@
         });
     });
 
-    /* function getEvents(){
-        var events = $.ajax({
-            type: "GET",
-            url: '{{ url("/admin/services/getEvents") }}',
-            success: function (response){
-                return response;
-            },
-            error: function (){
-                alert("Ha ocurrido un error, inténtalo nuevamente.");
-                var response = [];
-                return response;
-            }
-        });
-        if(events.lenght){
-            return events;
-        }else {
-            var events = [];
-            return events;
-        }
-        
-    }
-
-    function getWorkHours(doctorId){
-
-        return '{{ url("/admin/services/getHorario/doctor") }}/'+ doctorId;
-        var workHours = $.ajax({
-            type: "GET",
-            url: '{{ url("/admin/services/getHorario/doctor") }}/'+ doctorId,
-            success: function (response){
-                return response;
-            },
-            error: function (){
-                alert("Ha ocurrido un error, inténtalo nuevamente.");
-                var response = [];
-                return response;
-            }
-        });
-        if(workHours.lenght) {
-            return workHours;
-        }else {
-            var workHours = [];
-            return workHours;
-        }
-    } */
-
     function calendar(doctorId = 0, events, workHours){
         
         var calendarEl = document.getElementById('calendar');
@@ -270,16 +225,18 @@
             },
 
             dateClick: function(info){
-                $('#modalAddEvent').appendTo("body");
-               
-                var modal = new bootstrap.Modal(document.getElementById('modalAddEvent'));
-                modal.toggle();
+                if(info.jsEvent.originalTarget.attributes.class.nodeValue != "fc-non-business"){
+                    $('#modalAddEvent').appendTo("body");
+                
+                    var modal = new bootstrap.Modal(document.getElementById('modalAddEvent'));
+                    modal.toggle();
 
-                var date = moment(info.dateStr,'YYYY-MM-DDTHH:mm:ss').format('DD-MM-YYYY');
-                var startTime = moment(info.dateStr,'YYYY-MM-DDTHH:mm:ss').format('HH:mm');
+                    var date = moment(info.dateStr,'YYYY-MM-DDTHH:mm:ss').format('DD-MM-YYYY');
+                    var startTime = moment(info.dateStr,'YYYY-MM-DDTHH:mm:ss').format('HH:mm');
 
-                $('#date').val(date);
-                $('#time').val(startTime);
+                    $('#date').val(date);
+                    $('#time').val(startTime);
+                }
             },
         });
         calendar.render();

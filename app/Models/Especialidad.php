@@ -34,6 +34,9 @@ class Especialidad extends Model
     | RELATIONS
     |--------------------------------------------------------------------------
     */
+    public function doctors(){
+        return $this->hasMany(Doctor::class);
+    }
 
     /*
     |--------------------------------------------------------------------------
