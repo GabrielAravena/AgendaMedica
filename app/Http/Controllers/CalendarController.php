@@ -79,7 +79,6 @@ class CalendarController extends Controller
         $events = [];
         if (!$user->hasRole('Admin') && !$user->hasRole('Administrador')) {
             $agendas = Agenda::where('user_id', "!=", $user->id)->where('doctor_id', $doctor_id)->get();
-            //dd($agendas);
 
             foreach ($agendas as $agenda) {
                 $horaTermino = date('H:i:s', strtotime('+30 minutes', strtotime($agenda->hora)));
@@ -139,99 +138,4 @@ class CalendarController extends Controller
         }
         return response("ok", 200);
     }
-
-    /* public function store(Request $request){
-
-        $rules =[
-            'first_name' => 'required|min:3|max:255',
-            'last_name' => 'required|min:3|max:255',
-            'email' => 'required|email',
-            'date' => 'required|date',
-            'start_time' => 'required',
-            'end_time' => 'required',
-            'service_hash' => 'required',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            $errors = json_encode($validator->errors(), JSON_UNESCAPED_SLASHES);
-            return response($errors, 400);
-        }
-
-
-        $serviceBooking = new ServiceBooking;
-
-        $service = Service::where('hash', $request->service_hash)->first();
-
-        $customer = Customer::where('email', $request->email)->first();
-        if(!$customer){
-            $customer = Customer::create([
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'email' => $request->email,
-                'uid' => '123456',
-                'created_by_user_id' => $service->user_id,
-            ]);
-        }
-
-        $formula = [
-            'service_name' => $service->name,
-            'service_duration' => $service->duration,
-            'service_unit' => $service->unit,
-            'service_currency_id' => $service->currency_id,
-            'service_hash' => $service->hash,
-            'service_user_id' => $service->user_id,
-            'service_calendar_color' => $service->calendar_color,
-            'customer_first_name' => $request->first_name,
-            'customer_last_name' => $request->last_name,
-            'customer_email' => $request->email,
-        ];
-
-        $start_at = $request->date." ".$request->start_time;
-        $ends_at = $request->date." ".$request->end_time;
-        
-        $serviceBooking->make([
-                'starts_at' => $start_at, 
-                'ends_at' => $ends_at, 
-                'price' => $service->price, 
-                'quantity' => 1, 
-                'currency' => $service->currency->code, 
-                'formula' => $formula,
-                'notes' => $request->comment,
-            ])
-            ->customer()->associate($customer)
-            ->bookable()->associate($service)
-            ->save();
-    } */
-
-    /* public function events($hash = ""){
-
-        if($serviceBookings = Service::where('hash', $hash)->first()){
-            $serviceBookings = $serviceBookings->getBookingModel()->where('canceled_at', null)->get();
-        }else{
-            $serviceBookings = ServiceBooking::where('canceled_at', null)->get();
-        }
-        
-        $events = [];
-        foreach($serviceBookings as $serviceBooking){
-            $service = $serviceBooking->bookable;
-            $customer = $serviceBooking->customer;
-            $event = array(
-                'title' => $service->name,
-                'start' => $serviceBooking->starts_at,
-                'end' => $serviceBooking->ends_at,
-                'color' => $service->calendar_color,
-                'customerFirstName' => $customer->first_name,
-                'customerLastName' => $customer->last_name,
-                'customerEmail' => $customer->email,
-                'start_at' => $serviceBooking->starts_at,
-                'ends_at' => $serviceBooking->ends_at,
-                'comment' => $serviceBooking->notes,
-            );
-            array_push($events, $event);
-        }
-        $response = json_encode($events);
-        return response($response, 200);
-    } */
 }

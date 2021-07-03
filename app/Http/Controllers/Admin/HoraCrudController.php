@@ -39,7 +39,16 @@ class HoraCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        if (!backpack_user()->hasPermissionTo('horas.crear')) {
+            $this->crud->removeButton('create');
+        }
+        if (!backpack_user()->hasPermissionTo('horas.acciones')) {
+            $this->crud->removeButton('show');
+            $this->crud->removeButton('update');
+            $this->crud->removeButton('delete');
+        }
         CRUD::setFromDb(); // columns
+
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:

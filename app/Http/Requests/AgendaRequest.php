@@ -26,7 +26,11 @@ class AgendaRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'name' => 'required|min:5|max:255'
+            'fecha' => 'required|date',
+            'hora' => 'required',
+            'duracion' => 'required',
+            'user' => 'required',
+            'doctor' => 'required',
         ];
     }
 

@@ -39,6 +39,15 @@ class EspecialidadCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        if (!backpack_user()->hasPermissionTo('especialidades.crear')) {
+            $this->crud->removeButton('create');
+        }
+        if (!backpack_user()->hasPermissionTo('especialidades.acciones')) {
+            $this->crud->removeButton('show');
+            $this->crud->removeButton('update');
+            $this->crud->removeButton('delete');
+        }
+
         CRUD::setFromDb(); // columns
 
         /**

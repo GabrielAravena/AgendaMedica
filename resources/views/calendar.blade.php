@@ -259,7 +259,7 @@
             text: "¿Estás seguro de que deseas cancelar esta hora?",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#7c69ef',
+            confirmButtonColor: '#007bff',
             cancelButtonColor: '#d33',
             cancelButtonText: 'Cancelar',
             confirmButtonText: 'Sí, estoy seguro'

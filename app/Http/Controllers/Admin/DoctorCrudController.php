@@ -46,8 +46,17 @@ class DoctorCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        if (!backpack_user()->hasPermissionTo('doctores.crear')) {
+            $this->crud->removeButton('create');
+        }
+        if (!backpack_user()->hasPermissionTo('doctores.acciones')) {
+            $this->crud->removeButton('show');
+            $this->crud->removeButton('update');
+            $this->crud->removeButton('delete');
+        }
+
         CRUD::setFromDb(); // columns
-        $this->crud->filters();
+        
 
 
         /**

@@ -42,8 +42,14 @@ class AgendaCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        //CRUD::setFromDb(); // columns
-        CRUD::filters();
+        if (!backpack_user()->hasPermissionTo('agendas.crear')) {
+            $this->crud->removeButton('create');
+        }
+        if (!backpack_user()->hasPermissionTo('agendas.acciones')) {
+            $this->crud->removeButton('show');
+            $this->crud->removeButton('update');
+            $this->crud->removeButton('delete');
+        }
 
         CRUD::addColumn([  
             'name'         => 'user', // name of relationship method in the model
@@ -139,7 +145,17 @@ class AgendaCrudController extends CrudController
         CRUD::setValidation(AgendaRequest::class);
 
         CRUD::setFromDb(); // fields
-
+        CRUD::removeFields(['user_id', 'doctor_id']);
+        CRUD::addField([
+            'name' => 'user', 
+            'type' => 'select2',
+            'label' => 'Usuario'
+        ]); 
+        CRUD::addField([
+            'name' => 'doctor', 
+            'type' => 'select2',
+            'label' => 'Doctor'
+        ]); 
         /**
          * Fields can be defined using the fluent syntax or array syntax:
          * - CRUD::field('price')->type('number');
