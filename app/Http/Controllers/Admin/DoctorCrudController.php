@@ -171,8 +171,7 @@ class DoctorCrudController extends CrudController
 
         for ($i = 1; $i < 8; $i++) {
             $key = array_search($i, array_column($horarios, 'dia'));
-            //arreglar problema con el cero
-            if($key != "false"){
+            if(!($key === false)){
                 CRUD::addField([
                     'name' => $i,
                     'value' => 1,

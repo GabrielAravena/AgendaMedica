@@ -33,13 +33,6 @@ class CalendarController extends Controller
         return response()->json($response);
     }
 
-    public function getHorasDisponibles($id){
-        $horarios = Horario::where("doctor_id", $id)->get();
-        $response = ['data' => $horarios];
-     
-        return response()->json($response);
-    }
-
     public function getEvents(){
 
         $user = backpack_user();
@@ -61,15 +54,18 @@ class CalendarController extends Controller
                 'especialidad' => $agenda->doctor->especialidad->nombre,
                 'fecha' => $agenda->fecha,
                 'hora' => $agenda->hora,
+                'agenda_id' => $agenda->id,
             );
             array_push($events, $event);
         }
         return response()->json($events);
     }
 
-    public function getHorario($doctorId){
+    public function getHorario($doctor_id){
 
-        $horarios = Horario::where('doctor_id', $doctorId)->get();
+        $user = backpack_user();
+
+        $horarios = Horario::where('doctor_id', $doctor_id)->get();
 
         $businessHours = [];
         foreach($horarios as $horario){
@@ -79,7 +75,32 @@ class CalendarController extends Controller
                 'endTime' => $horario->hasta,
             ]; 
         }
-        return response()->json($businessHours);
+
+        $events = [];
+        if (!$user->hasRole('Admin') && !$user->hasRole('Administrador')) {
+            $agendas = Agenda::where('user_id', "!=", $user->id)->where('doctor_id', $doctor_id)->get();
+            //dd($agendas);
+
+            foreach ($agendas as $agenda) {
+                $horaTermino = date('H:i:s', strtotime('+30 minutes', strtotime($agenda->hora)));
+                $event = array(
+                    'title' => '',
+                    'start' => $agenda->fecha . " " . $agenda->hora,
+                    'end' => $agenda->fecha . " " . $horaTermino,
+                    'color' => '#dcdcdc',
+                    'textColor' => '#dcdcdc',
+                    'display' => 'background',
+                    'horaNoHabilitada' => 'horaNoHabilitada',
+                );
+                array_push($events, $event);
+            }
+        }
+        
+        $response = [];
+        $response += ['businessHours' => $businessHours];
+        $response += ['events' => $events];
+
+        return response()->json($response);
     }
 
     public function store(Request $request){
@@ -102,6 +123,21 @@ class CalendarController extends Controller
             'hora' => $request->hora,
             'duracion' => Agenda::DURACION,
         ]);
+    }
+
+    public function delete(Request $request){
+
+        $user = backpack_user();
+        $agenda = Agenda::find($request->agenda_id);
+
+        if($user->hasRole("Admin")){
+            $agenda->delete();
+        }else{
+            if($agenda->user_id == $user->id){
+                $agenda->delete();
+            }
+        }
+        return response("ok", 200);
     }
 
     /* public function store(Request $request){

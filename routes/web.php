@@ -20,9 +20,11 @@ Route::get('/', function () {
 
 Route::get('/admin/agendar/', [CalendarController::class, 'index'])->name('agendar.index');
 Route::get('/admin/services/getDoctors/especialidadId/{id}', [CalendarController::class, 'getDoctors']);
-Route::get('/admin/services/getHorasDisponibles/doctorId/{id}', [CalendarController::class, 'getHorasDisponibles']);
+/* Route::get('/admin/services/getHorasDisponibles/doctorId/{id}', [CalendarController::class, 'getHorasDisponibles']); */
 Route::post('/admin/calendar/store', [CalendarController::class, 'store'])->name('calendar.store');
 Route::get('/admin/services/getEvents', [CalendarController::class, 'getEvents']);
 Route::get('/admin/services/getHorario/doctor/{doctorId}', [CalendarController::class, 'getHorario']);
+Route::post('/admin/services/deleteAgenda', [CalendarController::class, 'delete'])->name("calendar.delete");
+
 
 
